@@ -31,7 +31,4 @@ export default defineNuxtConfig({
 			],
 		},
 	},
-	nitro: {
-		preset: "github-pages",
-	},
 });

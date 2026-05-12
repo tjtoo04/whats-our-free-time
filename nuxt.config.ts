@@ -32,11 +32,6 @@ export default defineNuxtConfig({
 		},
 	},
 	nitro: {
-		preset: "cloudflare_pages",
-		cloudflare: {
-			deployConfig: true,
-			nodeCompat: true,
-		},
+		preset: "github-pages",
 	},
 });
-

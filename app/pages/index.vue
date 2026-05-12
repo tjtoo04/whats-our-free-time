@@ -102,6 +102,21 @@ function onIntakeSelected(intake: Intake) {
 function removeIntake(id: string) {
   selectedIntakes.value = selectedIntakes.value.filter((i) => i.id !== id);
 }
+
+const COURSE_COLORS = [
+  { bg: "rgba(245, 158, 11, 0.18)", border: "rgba(245, 158, 11, 0.55)", text: "#F59E0B", label: "#FBBF24" },
+  { bg: "rgba(20, 184, 166, 0.18)", border: "rgba(20, 184, 166, 0.55)", text: "#14B8A6", label: "#5EEAD4" },
+  { bg: "rgba(244, 63, 94, 0.18)", border: "rgba(244, 63, 94, 0.55)", text: "#F43F5E", label: "#FDA4AF" },
+  { bg: "rgba(139, 92, 246, 0.18)", border: "rgba(139, 92, 246, 0.55)", text: "#8B5CF6", label: "#C4B5FD" },
+  { bg: "rgba(52, 211, 153, 0.18)", border: "rgba(52, 211, 153, 0.55)", text: "#34D399", label: "#6EE7B7" },
+  { bg: "rgba(56, 189, 248, 0.18)", border: "rgba(56, 189, 248, 0.55)", text: "#38BDF8", label: "#7DD3FC" },
+  { bg: "rgba(251, 146, 60, 0.18)", border: "rgba(251, 146, 60, 0.55)", text: "#FB923C", label: "#FDBA74" },
+  { bg: "rgba(232, 121, 249, 0.18)", border: "rgba(232, 121, 249, 0.55)", text: "#E879F9", label: "#F0ABFC" },
+];
+
+function getColor(index: number) {
+  return COURSE_COLORS[index % COURSE_COLORS.length]!;
+}
 </script>
 
 <template>
@@ -175,13 +190,19 @@ function removeIntake(id: string) {
       <!-- Selected intake pills -->
       <div v-if="selectedIntakes.length > 0" class="flex flex-wrap gap-2 mb-5 md:mb-6">
         <span
-          v-for="intake in selectedIntakes"
+          v-for="(intake, idx) in selectedIntakes"
           :key="intake.id"
-          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono border border-surface-border bg-muted/60 text-muted-foreground transition-all duration-200 hover:border-surface-border-hover group"
+          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono border transition-all duration-200 group"
+          :style="{
+            backgroundColor: getColor(idx).bg,
+            color: getColor(idx).label,
+            borderColor: getColor(idx).border,
+          }"
         >
           {{ intake.intake }}
           <button
-            class="text-muted-foreground/50 hover:text-foreground transition-colors ml-0.5"
+            class="transition-colors ml-0.5 opacity-70 hover:opacity-100"
+            :style="{ color: getColor(idx).text }"
             :aria-label="'Remove intake ' + intake.intake"
             @click="removeIntake(intake.id)"
           >

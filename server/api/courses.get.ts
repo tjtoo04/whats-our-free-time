@@ -92,8 +92,8 @@ export default defineEventHandler(async (event) => {
 		>();
 
 		for (const rec of filtered) {
-			const intakeKey = rec.INTAKE ?? "UNKNOWN";
-			const modKey = rec.MODID ?? "UNKNOWN";
+			const intakeKey = (rec.INTAKE ?? "UNKNOWN").trim();
+			const modKey = (rec.MODID ?? "UNKNOWN").trim();
 
 			if (!intakeMap.has(intakeKey)) {
 				intakeMap.set(intakeKey, new Map());

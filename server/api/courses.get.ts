@@ -32,7 +32,13 @@ export default defineEventHandler(async (event) => {
 			const codes = new Set(
 				intakesList.split(",").map((c) => c.trim().toUpperCase()),
 			);
-			filtered = raw.filter((item) => codes.has(item.INTAKE?.toUpperCase()));
+			filtered = raw.filter((item) => {
+				const groupStr = (item.GROUPING ?? "").trim();
+				const fullIntake = groupStr
+					? `${item.INTAKE?.trim()} (${groupStr})`
+					: (item.INTAKE?.trim() ?? "UNKNOWN");
+				return codes.has(fullIntake.toUpperCase());
+			});
 		} else if (search) {
 			// Fuzzy search by intake code
 			filtered = raw.filter((item) => {
@@ -92,8 +98,10 @@ export default defineEventHandler(async (event) => {
 		>();
 
 		for (const rec of filtered) {
-			const intakeKey = (rec.INTAKE ?? "UNKNOWN").trim();
-			const modKey = (rec.MODID ?? "UNKNOWN").trim();
+			const groupStr = (rec.GROUPING ?? "").trim().toUpperCase();
+			const intakeCode = (rec.INTAKE ?? "UNKNOWN").trim().toUpperCase();
+			const intakeKey = groupStr ? `${intakeCode} (${groupStr})` : intakeCode;
+			const modKey = (rec.MODID ?? "UNKNOWN").trim().toUpperCase();
 
 			if (!intakeMap.has(intakeKey)) {
 				intakeMap.set(intakeKey, new Map());
@@ -118,7 +126,7 @@ export default defineEventHandler(async (event) => {
 			const venue = rec.ROOM ?? rec.LOCATION ?? "";
 
 			// Deduplicate: same day+time+venue = same weekly slot
-			const slotKey = `${day}|${startTime}|${endTime}|${venue}`;
+			const slotKey = `${day}|${startTime}|${endTime}|${venue}`.toUpperCase();
 			if (!course._seen.has(slotKey)) {
 				course._seen.add(slotKey);
 				course.classes.push({

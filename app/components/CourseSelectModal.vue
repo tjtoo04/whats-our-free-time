@@ -196,8 +196,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 
           <!-- Results -->
           <button
-            v-for="intake in filtered"
-            :key="intake.id"
+            v-for="(intake, index) in filtered"
+            :key="`${intake.intake}_${index}`"
             class="w-full flex items-start gap-3 px-4 py-3.5 rounded-lg text-left transition-all duration-200 hover:bg-white/[0.04] group"
             @click="selectIntake(intake)"
           >

@@ -37,6 +37,7 @@ const activeDay = ref(
 );
 const showModal = ref(false);
 const isRehydrating = ref(false);
+const activeMobileTab = ref<'timetable' | 'summary'>('timetable');
 
 // ── Selected intakes & flattened courses ────────────────────────
 const selectedIntakes = ref<Intake[]>([]);
@@ -238,22 +239,44 @@ function getColor(index: number) {
         <p class="text-sm text-muted-foreground">Loading your timetable…</p>
       </div>
 
-      <!-- Timetable -->
-      <TimetableChart
-        v-else-if="selectedIntakes.length > 0"
-        :courses="selectedCourses!"
-        :active-day="activeDay!"
-      />
+      <!-- Main Content when loaded -->
+      <template v-else-if="selectedIntakes.length > 0">
+        <!-- Mobile View Tabs -->
+        <div v-if="selectedIntakes.length >= 2" class="md:hidden flex gap-2 p-1 bg-white/[0.02] border border-white/5 rounded-xl mb-5">
+          <button
+            class="flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            :class="activeMobileTab === 'timetable' ? 'bg-accent text-accent-foreground shadow-glow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'"
+            @click="activeMobileTab = 'timetable'"
+          >
+            Timetable
+          </button>
+          <button
+            class="flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            :class="activeMobileTab === 'summary' ? 'bg-accent text-accent-foreground shadow-glow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'"
+            @click="activeMobileTab = 'summary'"
+          >
+            Time Summary
+          </button>
+        </div>
 
-      <!-- Free time analysis (shown when 2+ intakes) -->
-      <FreeTimeSummary
-        v-if="!isRehydrating && selectedIntakes.length >= 2"
-        :intakes="selectedIntakes"
-        class="mt-6 md:mt-8"
-      />
+        <!-- Timetable -->
+        <div :class="[selectedIntakes.length >= 2 && activeMobileTab !== 'timetable' ? 'hidden md:block' : '']">
+          <TimetableChart
+            :courses="selectedCourses!"
+            :active-day="activeDay!"
+          />
+        </div>
+
+        <!-- Free time analysis (shown when 2+ intakes) -->
+        <div v-if="selectedIntakes.length >= 2" :class="[activeMobileTab !== 'summary' ? 'hidden md:block' : '', 'mt-6 md:mt-8']">
+          <FreeTimeSummary
+            :intakes="selectedIntakes"
+          />
+        </div>
+      </template>
 
       <!-- Empty state -->
-      <div v-if="!isRehydrating && selectedIntakes.length === 0" class="mt-8 text-center py-12">
+      <div v-else class="mt-8 text-center py-12">
         <div
           class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent-muted mb-4"
         >
